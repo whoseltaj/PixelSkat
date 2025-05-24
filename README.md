@@ -140,5 +140,22 @@ game/
 * For questions or support, contact: eltaj0404@gmail.com
 
 
-
+core/
+├── calibration.py         # User-specific calibration routine
+├── fatigue_detection.py   # Main fatigue detection loop and logic
+├── detectors/
+│   ├── blink_detector.py  # Blink detection logic
+│   ├── motion_detector.py # Head motion detection logic
+│   └── yawn_detector.py   # Yawn detection logic
+├── face_mesh/
+│   ├── face_mesh_detector.py # MediaPipe Face Mesh interface
+│   └── head_pose_estimator.py # Head pose calculation
+├── metrics/
+│   ├── eye_aspect_ratio.py   # EAR calculation
+│   └── mouth_aspect_ratio.py # MAR calculation
+config.py               # Configuration and constants
+main.py                 # Entry point for calibration + detection
+alert.wav               # Audio alert file
+requirements.txt        # Python dependencies
+README.md               # This documentation
 
