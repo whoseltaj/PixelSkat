@@ -27,7 +27,7 @@ def main():
         deck.shuffle()
         hands = deck.deal(num_hands=3, cards_per_hand=10)
         hand_F, hand_M, hand_R = hands
-        skat_cards = deck.cards  # the two leftover cards
+        skat_cards = deck.cards
 
 
         winner, final_bid = interactive_bidding_phase(hand_F, hand_M, hand_R)
