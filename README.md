@@ -107,7 +107,6 @@ game/
 └─ main.py                   # Entry point for full game
 
 ```
-![Skat Engine Structure](images/project_tree.png)
 
 1. **State Encodings**
 
@@ -141,31 +140,3 @@ game/
 
 ## 🚩 Contact
 * For questions or support, contact: eltaj0404@gmail.com
-
-
-## Project Structure
-
-```text
-game/
-├─ experiments/
-│  ├─ config1/         # Code and configs for Experiment 1 (MCTS vs MCTS+NN players)
-│  └─ config2/         # Code and configs for Experiment 2 (alternate player setup)
-├─ interface/          # Pygame UI front-end
-├─ nn/                 # Neural network architectures & training scripts
-│  ├─ 1hidL/, 3hidL/, 6hidL/
-│  ├─ data/, logs/
-│  ├─ data_split.py
-│  ├─ generate_data.py
-│  └─ model.py
-├─ card.py              # Card and deck definitions
-├─ deck.py              # Deck shuffle & deal logic
-├─ state.py             # Core game state & MCTS bidding logic
-├─ game_type_selection.py
-├─ declarer_phase.py    # Skat pick-up vs hand decision
-├─ trick_phase.py       # Trick-taking MCTS + NN integration
-└─ main.py              # Entry point for full game
-```
-
-![Skat Engine Structure](images/project_tree.png)
-
-
