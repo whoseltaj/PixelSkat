@@ -86,7 +86,7 @@ Results and in-game logs will print to your console, including softmax distribut
 ## 🔍 Architecture Overview
 
 Project Structure
-
+```text
 game/
 ├─ experiments/
 │  ├─ config1/                # Code and configs for Experiment 1 (MCTS vs 2 MCTS+NN players)
@@ -105,6 +105,9 @@ game/
 ├─ declarer_phase.py         # Skat pick-up vs hand decision
 ├─ trick_phase.py            # Trick-taking MCTS + NN integration
 └─ main.py                   # Entry point for full game
+
+```
+![Skat Engine Structure](images/project_tree.png)
 
 1. **State Encodings**
 
@@ -140,22 +143,29 @@ game/
 * For questions or support, contact: eltaj0404@gmail.com
 
 
-core/
-├── calibration.py         # User-specific calibration routine
-├── fatigue_detection.py   # Main fatigue detection loop and logic
-├── detectors/
-│   ├── blink_detector.py  # Blink detection logic
-│   ├── motion_detector.py # Head motion detection logic
-│   └── yawn_detector.py   # Yawn detection logic
-├── face_mesh/
-│   ├── face_mesh_detector.py # MediaPipe Face Mesh interface
-│   └── head_pose_estimator.py # Head pose calculation
-├── metrics/
-│   ├── eye_aspect_ratio.py   # EAR calculation
-│   └── mouth_aspect_ratio.py # MAR calculation
-config.py               # Configuration and constants
-main.py                 # Entry point for calibration + detection
-alert.wav               # Audio alert file
-requirements.txt        # Python dependencies
-README.md               # This documentation
+## Project Structure
+
+```text
+game/
+├─ experiments/
+│  ├─ config1/         # Code and configs for Experiment 1 (MCTS vs MCTS+NN players)
+│  └─ config2/         # Code and configs for Experiment 2 (alternate player setup)
+├─ interface/          # Pygame UI front-end
+├─ nn/                 # Neural network architectures & training scripts
+│  ├─ 1hidL/, 3hidL/, 6hidL/
+│  ├─ data/, logs/
+│  ├─ data_split.py
+│  ├─ generate_data.py
+│  └─ model.py
+├─ card.py              # Card and deck definitions
+├─ deck.py              # Deck shuffle & deal logic
+├─ state.py             # Core game state & MCTS bidding logic
+├─ game_type_selection.py
+├─ declarer_phase.py    # Skat pick-up vs hand decision
+├─ trick_phase.py       # Trick-taking MCTS + NN integration
+└─ main.py              # Entry point for full game
+```
+
+![Skat Engine Structure](images/project_tree.png)
+
 
