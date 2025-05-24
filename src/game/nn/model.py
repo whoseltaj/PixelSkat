@@ -1,8 +1,5 @@
-# File: src/game/nn/model.py
-
 import torch
 import numpy as np
-
 from src.game.trick_phase import TrickTakingState
 from src.game.card import Card, Suit, Rank
 
@@ -28,11 +25,6 @@ ACTION_DIM = len(SUITS) * len(RANKS)    # 32
 STATE_DIM = 255
 
 GAME_TYPE_TO_IDX = {"suit": 0, "grand": 1, "null": 2}
-
-
-# ——————————————————————————————————————————
-# 3) Flat state encoder
-# ——————————————————————————————————————————
 
 def encode_state_flat(state: TrickTakingState) -> torch.Tensor:
 
@@ -125,14 +117,11 @@ def encode_state_flat(state: TrickTakingState) -> torch.Tensor:
     return torch.from_numpy(vec)
 
 
-
 def encode_action(card: Card) -> int:
     return card_to_index(card)
 
 def decode_action(idx: int) -> Card:
     return index_to_card(idx)
-
-
 
 CHANNELS = 8
 HEIGHT, WIDTH = len(RANKS), len(SUITS)   # 8 ranks × 4 suits
