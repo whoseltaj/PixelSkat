@@ -1,12 +1,9 @@
-# File: src/game/interface/pygame_ui.py
-
 import os
 import pygame
 import numpy as np
 from src.game.trick_phase import Trick, TrickTakingState, mcts_trick_phase
 from tensorflow.keras.models import load_model
 from src.game.card import Suit
-
 
 def run_ui(hand_F, hand_M, hand_R, skat_cards,
            game_type=None, trump=None, declarer=None,
@@ -142,6 +139,32 @@ def run_ui(hand_F, hand_M, hand_R, skat_cards,
     else:
         state = None
 
+    def animate_card(card_img, start_pos, end_pos, duration_ms=300):
+        start_time = pygame.time.get_ticks()
+        sx, sy = start_pos
+        ex, ey = end_pos
+        while True:
+            now = pygame.time.get_ticks()
+            t = min((now - start_time) / duration_ms, 1.0)
+            x = sx + (ex - sx) * t
+            y = sy + (ey - sy) * t
+
+            # redraw entire UI
+            screen.blit(background, (0, 0))
+            screen.blit(p1_img, p1_rect); screen.blit(name_p1, p1_name_rect)
+            screen.blit(p2_img, p2_rect); screen.blit(name_p2, p2_name_rect)
+            screen.blit(p3_img, p3_rect); screen.blit(name_p3, p3_name_rect)
+            for pos, img in zip(p1_positions, p1_imgs): screen.blit(img, pos)
+            for pos, img in zip(p2_positions, p2_imgs): screen.blit(img, pos)
+            for pos, img in zip(p3_positions, p3_imgs): screen.blit(img, pos)
+            for img_played, pos_played in played: screen.blit(img_played, pos_played)
+
+            screen.blit(card_img, (x, y))
+            pygame.display.flip()
+            clock.tick(60)
+            if t >= 1.0:
+                break
+
     softmax_log = []
     # 10) Main loop
     running = True
@@ -159,29 +182,21 @@ def run_ui(hand_F, hand_M, hand_R, skat_cards,
                     if pygame.Rect(pos[0], pos[1], card_w, card_h).collidepoint(ev.pos):
                         img3 = p3_imgs.pop(i)
                         card3 = ui_hand_M.pop(i)
+                        animate_card(img3, pos, center_slots[0])
                         played.append((img3, center_slots[0]))
-                        p3_positions = compute_positions(
-                            p3_rect.centerx,
-                            p3_rect.top - 40 - card_h,
-                            len(ui_hand_M),
-                        )
+                        p3_positions = compute_positions(p3_rect.centerx, p3_rect.top - 40 - card_h, len(ui_hand_M))
+
 
                         if state:
                             state.apply(card3)
 
-                            # AI #1 plays
+                            # AI #1
                             c1 = mcts_trick_phase(state, iterations=2000)
-                            img1 = pygame.transform.scale(
-                                c1.load_image(), (card_w, card_h)
-                            )
+                            img1 = pygame.transform.scale(c1.load_image(), (card_w, card_h))
+                            ui_hand_F.remove(c1); p1_imgs.pop(0)
+                            animate_card(img1, p1_positions[0], center_slots[1])
                             played.append((img1, center_slots[1]))
-                            ui_hand_F.remove(c1)
-                            p1_imgs.pop(0)
-                            p1_positions = compute_positions(
-                                p1_name_rect.centerx,
-                                p1_name_rect.bottom + 40,
-                                len(ui_hand_F),
-                            )
+                            p1_positions = compute_positions(p1_name_rect.centerx, p1_name_rect.bottom + 40, len(ui_hand_F))
                             state.apply(c1)
 
 
@@ -200,24 +215,19 @@ def run_ui(hand_F, hand_M, hand_R, skat_cards,
                             softmax_log.append(trick_softmax)
 
 
-                            print("\n--- Player 2 Policy Priors ---")
+                            print("\n--- Player 2 SOFTMAX OUTPUTS ---")
                             for card, p in sorted(trick_softmax, key=lambda x: x[1], reverse=True):
                                 print(f"  {card:3s} → {p:.3f}")
                             print("------------------------------\n")
 
-
                             c2 = mcts_trick_phase(state, iterations=2000, policy=policy_net)
-                            img2 = pygame.transform.scale(
-                                c2.load_image(), (card_w, card_h)
-                            )
-                            played.append((img2, center_slots[2]))
-                            ui_hand_R.remove(c2)
+                            img2 = pygame.transform.scale(c2.load_image(), (card_w, card_h))
+                            ui_hand_R.remove(c2);
                             p2_imgs.pop(0)
-                            p2_positions = compute_positions(
-                                p2_name_rect.centerx,
-                                p2_name_rect.bottom + 40,
-                                len(ui_hand_R),
-                            )
+                            animate_card(img2, p2_positions[0], center_slots[2])
+                            played.append((img2, center_slots[2]))
+                            p2_positions = compute_positions(p2_name_rect.centerx, p2_name_rect.bottom + 40,
+                                                             len(ui_hand_R))
                             state.apply(c2)
 
                             if state.is_terminal():
@@ -242,23 +252,13 @@ def run_ui(hand_F, hand_M, hand_R, skat_cards,
 
 
         screen.blit(background, (0, 0))
-        screen.blit(p1_img, p1_rect)
-        screen.blit(name_p1, p1_name_rect)
-        screen.blit(p2_img, p2_rect)
-        screen.blit(name_p2, p2_name_rect)
-        screen.blit(p3_img, p3_rect)
-        screen.blit(name_p3, p3_name_rect)
-
-        for pos, img in zip(p1_positions, p1_imgs):
-            screen.blit(img, pos)
-        for pos, img in zip(p2_positions, p2_imgs):
-            screen.blit(img, pos)
-        for pos, img in zip(p3_positions, p3_imgs):
-            screen.blit(img, pos)
-
-        # Show the current trick
-        for img, pos in played:
-            screen.blit(img, pos)
+        screen.blit(p1_img, p1_rect); screen.blit(name_p1, p1_name_rect)
+        screen.blit(p2_img, p2_rect); screen.blit(name_p2, p2_name_rect)
+        screen.blit(p3_img, p3_rect); screen.blit(name_p3, p3_name_rect)
+        for pos, img in zip(p1_positions, p1_imgs): screen.blit(img, pos)
+        for pos, img in zip(p2_positions, p2_imgs): screen.blit(img, pos)
+        for pos, img in zip(p3_positions, p3_imgs): screen.blit(img, pos)
+        for img_played, pos_played in played: screen.blit(img_played, pos_played)
 
         pygame.display.flip()
         clock.tick(30)
