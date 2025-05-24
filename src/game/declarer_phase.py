@@ -3,9 +3,6 @@ import random
 import copy
 from src.game.state import evaluate_game_type
 
-
-
-
 class SkatPhaseState:
     def __init__(self, hand, skat_cards):
         self.hand = hand[:]
@@ -34,11 +31,9 @@ class SkatPhaseState:
         return self
 
     def is_terminal(self):
-
         return self.picked_up is not None
 
 def rollout_skat_policy(state: SkatPhaseState) -> str:
-
     base_vals   = evaluate_game_type(state.hand)
     pickup_hand = state.hand + state.skat_cards
     pickup_vals = evaluate_game_type(pickup_hand)
@@ -48,7 +43,6 @@ def rollout_skat_policy(state: SkatPhaseState) -> str:
 
     return "pickup" if (best_pickup - best_base) > 3 else "skip"
 def simulate_rollout_skat(state: SkatPhaseState) -> float:
-
     st = copy.deepcopy(state)
     if not st.is_terminal():
         action = rollout_skat_policy(st)
@@ -127,9 +121,6 @@ def mcts_skat_phase(initial_state, iterations=2000, c_puct=1.0):
     return best.action
 
 
-
-
-
 def interactive_declarer_phase(final_winner, hand, skat_cards):
 
     print("=== Declarer Skat Phase ===\n")
@@ -138,7 +129,7 @@ def interactive_declarer_phase(final_winner, hand, skat_cards):
     state = SkatPhaseState(hand, skat_cards)
 
     state.interactive = True
-    recommended_action = mcts_skat_phase(state, iterations=500)
+    recommended_action = mcts_skat_phase(state, iterations=2000)
 
     if final_winner == "M":
         print("Your current hand:")
