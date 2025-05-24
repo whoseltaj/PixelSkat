@@ -3,9 +3,7 @@ import sys
 import pygame
 import math
 import copy
-
 from src.game.state import evaluate_game_type, evaluate_suit_game
-
 
 class GameTypeState:
     def __init__(self, hand):
@@ -31,9 +29,6 @@ class GameTypeState:
             return 0
         return values[self.selected]
 
-
-
-
 class TrumpSelectionState:
     def __init__(self, hand):
         self.hand = hand[:]
@@ -54,7 +49,6 @@ class TrumpSelectionState:
 
     def reward(self):
         return evaluate_suit_game(self.hand, self.selected)
-
 
 
 def rollout_game_type_policy(state):
@@ -150,10 +144,8 @@ def mcts_search(initial_state, iterations=2000, c_puct=1.4):
             node.update(reward)
             node = node.parent
 
-
     best = max(root.children, key=lambda n: n.visits)
     return best.action
-
 
 def select_game_type(declarer):
     if declarer == "M":
@@ -162,13 +154,11 @@ def select_game_type(declarer):
         print("Error: For AI declarers, use select_game_type_entry(declarer, ai_hand).")
         sys.exit(1)
 
-
 def select_game_type_entry(declarer, ai_hand):
     if declarer == "M":
         return _interactive_game_type()
     else:
         return select_game_type_ai(ai_hand)
-
 
 def select_game_type_ai(ai_hand):
     selected_type = mcts_game_type_selection(ai_hand)
@@ -176,7 +166,6 @@ def select_game_type_ai(ai_hand):
         return selected_type, None
     trump = mcts_trump_selection(ai_hand)
     return "suit", trump
-
 
 def mcts_game_type_selection(ai_hand):
     state = GameTypeState(ai_hand)
@@ -186,8 +175,6 @@ def mcts_game_type_selection(ai_hand):
 def mcts_trump_selection(ai_hand):
     state = TrumpSelectionState(ai_hand)
     return mcts_search(state, iterations=2000)
-
-
 
 def _interactive_game_type():
 
@@ -275,7 +262,6 @@ def _interactive_game_type():
 
     trump = _interactive_trump_selection(main_bg_img, project_root, screen_width, screen_height)
     return "suit", trump
-
 
 def _interactive_trump_selection(main_bg_img, project_root, screen_width, screen_height):
 
