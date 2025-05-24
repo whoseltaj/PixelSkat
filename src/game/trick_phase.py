@@ -1,5 +1,3 @@
-# File: src/game/trick_phase.py
-
 import math
 import random
 
@@ -26,13 +24,12 @@ JACK_ORDER = {
     Suit.DIAMONDS: 1,
 }
 
-
 class Trick:
     def __init__(self, game_type: str, trump: Suit, leader: str):
-        self.game_type = game_type    # "suit", "grand", or "null"
-        self.trump     = trump        # Suit if suit-game else None
-        self.leader    = leader       # "F", "M" or "R"
-        self.cards     = []           # list of (player, Card)
+        self.game_type = game_type
+        self.trump     = trump
+        self.leader    = leader
+        self.cards     = []
         self.suit_led  = None
 
     def play(self, player: str, card: Card):
@@ -52,7 +49,6 @@ class Trick:
 
     def points(self) -> int:
         return sum(CARD_POINTS[card.rank] for _, card in self.cards)
-
 
 def _beats(c1: Card, c2: Card, led: Suit, trump: Suit, game_type: str) -> bool:
     if game_type == "null":
@@ -79,7 +75,6 @@ def _beats(c1: Card, c2: Card, led: Suit, trump: Suit, game_type: str) -> bool:
     if c2.suit == led and c1.suit != led:
         return False
 
-    # Same suit: compare by A-10-K-Q-9-8-7
     order = [Rank.ACE, Rank.TEN, Rank.KING, Rank.QUEEN,
              Rank.NINE, Rank.EIGHT, Rank.SEVEN]
     return order.index(c1.rank) < order.index(c2.rank)
@@ -87,10 +82,10 @@ def _beats(c1: Card, c2: Card, led: Suit, trump: Suit, game_type: str) -> bool:
 
 class TrickTakingState:
     def __init__(self,
-                 hands: dict,    # {"F":[...], "M":[...], "R":[...]}
-                 declarer: str,  # "F","M","R"
-                 game_type: str, # "suit","grand","null"
-                 trump: Suit,    # Suit if suit-game else None
+                 hands: dict,
+                 declarer: str,
+                 game_type: str,
+                 trump: Suit,
                  base_value: int = 1,
                  is_hand: bool = False,
                  is_ouvert: bool = False,
@@ -237,7 +232,6 @@ class TrickTakingState:
         player_map = {"F":0, "M":1, "R":2}
         vec[offset + player_map[self.current_player]] = 1.0
 
-
         return vec
 
 def heuristic_play(state: TrickTakingState) -> Card:
@@ -264,7 +258,6 @@ def simulate_rollout_tricks(state: TrickTakingState) -> float:
         move = heuristic_play(st)
         st.apply(move)
     return st._sum_points(st.declarer) / 120.0
-
 
 BIAS_WEIGHT = 0.5
 
@@ -298,7 +291,7 @@ class Node:
 
 def mcts_trick_phase(root_state,
                      iterations: int = 2000,
-                     policy=None  # New: optional Keras model
+                     policy=None
                     ) -> Card:
 
     root = Node(root_state)
@@ -316,8 +309,7 @@ def mcts_trick_phase(root_state,
         priors = _softmax(legal_logits)
         network_priors = dict(zip(legal, priors))
 
-
-    max_point = max(CARD_POINTS.values())  # for heuristic fallback
+    max_point = max(CARD_POINTS.values())
 
     for _ in range(iterations * 2):
         node = root
@@ -350,7 +342,6 @@ def mcts_trick_phase(root_state,
             node.visits += 1
             node.value   += reward
             node = node.parent
-
 
     if root_state.current_player == root_state.declarer:
         best = max(root.children, key=lambda n: n.value / n.visits)
