@@ -73,10 +73,10 @@ python main.py
 
 ```bash
 # config1: two MCTS+NN vs one pure-MCTS
-python src/game/experiments/config1/main_config.py
+python src/game/experiments/config1/main_config1.py
 
 # config2: one MCTS+NN vs two pure-MCTS
-python src/game/experiments/config2/main_config.py
+python src/game/experiments/config2/main_config2.py
 ```
 
 Results and in-game logs will print to your console, including softmax distribution and performance metrics.
